@@ -1,6 +1,7 @@
-Item,Price (USD),Link
-3d printed case,,
-Heltec Mesh Node T114,,
-SEN66 AQ sensor,,
-JST GHR-06V-S connector,,https://www.aliexpress.com/item/1005007295303376.html; 6p
-battery,,
+Item,Price (USD),Link & source
+3d printed case,~ 1,MeshAQ.3mf
+Heltec Mesh Node T114,33.13,https://www.aliexpress.com/item/1005011784585928.html
+SEN66 AQ sensor,58.72,https://cz.farnell.com/en-CZ/sensirion/sen66-sin-t/sensor-module-air-0-to-40000ppm/dp/4587290
+JST GHR-06V-S connector,0.14,"https://www.aliexpress.com/item/1005007295303376.html; 6p
+https://cz.farnell.com/en-CZ/jst-japan-solderless-terminals/ghr-06v-s/housing-1-25mm-6way/dp/1516242"
+battery,,I already have one
