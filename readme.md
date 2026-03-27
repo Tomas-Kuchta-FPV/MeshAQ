@@ -54,15 +54,15 @@ Runs on Meshtastic.
 
 ## BOM
 
-| Item                    | Price (USD) | I'll source myself | Link & source                                                                                         |
-| ----------------------- | ----------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
-| 3d printed case         | ~ 1         | YES                | MeshAQ.3mf                                                                                            |
-| Heltec Mesh Node T114   | 33.13       | YES                | https://www.aliexpress.com/item/1005011784585928.html                                                 |
-| SEN66 AQ sensor         | 58.72       | NO                 | https://www.laskakit.cz/senserion-sen66-sin-t-senzor-kvality-ovzdusi/         |
-| JST GHR-06V-S connector | 0.14        | NO                 | https://www.laskakit.cz/laskakit-airboard-propojovaci-kabel-pro-senserion-sen6x-senzor-kvality-ovzdusi/  |
-| battery                 | 0           | YES                | I already have one                                                                                    |
-| HackClub Total          | 58.89       |
-| Total                   | 92.02       |
+| Item                    | Price (USD) | I'll source myself | Link & source                                                                                           |
+| ----------------------- | ----------- | ------------------ | ------------------------------------------------------------------------------------------------------- |
+| 3d printed case         | ~ 1         | YES                | MeshAQ.3mf                                                                                              |
+| Heltec Mesh Node T114   | 33.13       | YES                | https://www.aliexpress.com/item/1005011784585928.html                                                   |
+| SEN66 AQ sensor         | 68.96       | NO                 | https://www.laskakit.cz/senserion-sen66-sin-t-senzor-kvality-ovzdusi/                                   |
+| JST GHR-06V-S connector | 0.85        | NO                 | https://www.laskakit.cz/laskakit-airboard-propojovaci-kabel-pro-senserion-sen6x-senzor-kvality-ovzdusi/ |
+| battery                 | IDK         | YES                | I already have one                                                                                      |
+| HackClub Total          | 69.81       |
+| Total                   | 102.94      |
 
 ## HackClub is fire! 🔥
 https://blueprint.hackclub.com/projects/11552
