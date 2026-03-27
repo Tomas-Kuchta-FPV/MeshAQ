@@ -1,4 +1,8 @@
 # MeshAQ
+A portable sensor node designed to be carried and deployed anywhere.
+
+This project serves as a development platform for Meshtastic, aiming to integrate the SEN6x family of environmental sensors and to support future upgrades in air quality and environmental telemetry within the Meshtastic ecosystem.
+
 This project aimed to create the ultimate Air Quality sensor station to monitor. But after being a bit bussy I didn't have time to make it up to my original idea.  
 But I managed to make a super small neat little all in one AQ helth monitor. Although I miss the other sensors.  
 Formaldehyde sensor is super expensive and an increased levels can can be deducted from the VOC index.  
