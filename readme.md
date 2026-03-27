@@ -58,8 +58,8 @@ Runs on Meshtastic.
 | ----------------------- | ----------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
 | 3d printed case         | ~ 1         | YES                | MeshAQ.3mf                                                                                            |
 | Heltec Mesh Node T114   | 33.13       | YES                | https://www.aliexpress.com/item/1005011784585928.html                                                 |
-| SEN66 AQ sensor         | 58.72       | NO                 | https://cz.farnell.com/en-CZ/sensirion/sen66-sin-t/sensor-module-air-0-to-40000ppm/dp/4587290         |
-| JST GHR-06V-S connector | 0.14        | NO                 | https://cz.farnell.com/en-CZ/jst-japan-solderless-terminals/ghr-06v-s/housing-1-25mm-6way/dp/1516242  |
+| SEN66 AQ sensor         | 58.72       | NO                 | https://www.laskakit.cz/senserion-sen66-sin-t-senzor-kvality-ovzdusi/         |
+| JST GHR-06V-S connector | 0.14        | NO                 | https://www.laskakit.cz/laskakit-airboard-propojovaci-kabel-pro-senserion-sen6x-senzor-kvality-ovzdusi/  |
 | battery                 | 0           | YES                | I already have one                                                                                    |
 | HackClub Total          | 58.89       |
 | Total                   | 92.02       |
