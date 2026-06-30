@@ -58,15 +58,14 @@ Runs on Meshtastic.
 
 ## BOM
 
-| Item                    | Price (USD) | I'll source myself | Link & source                                                                                           |
-| ----------------------- | ----------- | ------------------ | ------------------------------------------------------------------------------------------------------- |
-| 3d printed case         | ~ 1         | YES                | MeshAQ.3mf                                                                                              |
-| Heltec Mesh Node T114   | 33.13       | YES                | https://www.aliexpress.com/item/1005011784585928.html                                                   |
-| SEN66 AQ sensor         | 68.96       | NO                 | https://www.laskakit.cz/senserion-sen66-sin-t-senzor-kvality-ovzdusi/                                   |
-| JST GHR-06V-S connector | 0.85        | NO                 | https://www.laskakit.cz/laskakit-airboard-propojovaci-kabel-pro-senserion-sen6x-senzor-kvality-ovzdusi/ |
-| battery                 | IDK         | YES                | I already have one                                                                                      |
-| HackClub Total          | 69.81       |
-| Total                   | 102.94      |
+| Item                    | Price (USD) | Link & source                                                                                           |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
+| 3d printed case         | ~ 1         | MeshAQ.3mf                                                                                              |
+| Heltec Mesh Node T114   | 63.38       | https://www.laskakit.cz/heltec-mesh-node-t114-v2-0-868mhz-nrf52840-sx1262/?variantId=17030              |
+| SEN66 AQ sensor         | 68.96       | https://www.laskakit.cz/senserion-sen66-sin-t-senzor-kvality-ovzdusi/                                   |
+| JST GHR-06V-S connector | 0.85        | https://www.laskakit.cz/laskakit-airboard-propojovaci-kabel-pro-senserion-sen6x-senzor-kvality-ovzdusi/ |
+| battery                 | 10.31       | https://www.laskakit.cz/baterie-li-po-3-7v-3000mah-lipo/                                                |
+| Total                   | 143,5       |
 
 ## HackClub is fire! 🔥
 https://blueprint.hackclub.com/projects/11552
