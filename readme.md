@@ -54,7 +54,11 @@ So yeah I'm so happy with the result! A neat little usb powered AQ station.
 
 ## Software
 
-Runs on Meshtastic.
+### Prototype for outpost
+It will have it's own custom Arduino code made to interface with the sensor and display the values on the Eink screen.  
+
+### Final version
+I'm hoping to integrate it into meshtastic.  
 
 ## BOM
 
