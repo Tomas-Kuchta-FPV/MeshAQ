@@ -17,6 +17,11 @@ Display them, and lastly make pretty graphs(Optional).
 #endif
 #define NO_ERROR 0
 
+#define VBAT_PIN 7
+#define Resolution 0.000244140625 
+#define battery_in 3.3
+#define coefficient 1.199
+
 static char errorMessage[64];
 static int16_t error;
 
@@ -37,6 +42,7 @@ int16_t ambientTemperature = 0;
 int16_t vOCIndex = 0;
 int16_t nOxIndex = 0;
 uint16_t cO2 = 0;
+float battV = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -46,6 +52,11 @@ void setup() {
   display.setFont(&FreeSans12pt7b);
   display.printCenter("Starting AQ SEN66");
   display.update();
+  
+  analogReadResolution(12);
+  pinMode(46, OUTPUT);
+  digitalWrite(46, HIGH);
+  pinMode(VBAT_PIN, INPUT);
 
   delay(50);
 
@@ -127,6 +138,8 @@ void GetValues() {
       return;
     }
   }
+  //Read battery voltage
+  battV = analogRead(VBAT_PIN)* Resolution * battery_in * coefficient * 4.9;//battary/4096*3.3*coefficient
 }
 
 void DrawValues() { 
@@ -140,7 +153,8 @@ void DrawValues() {
   drawRow(160,260,22, "rH",  String(ambientHumidity / 100.0), "%");
   drawRow(160,260,45, "iVOC", String(vOCIndex));
   drawRow(160,260,68, "iNOx", String(nOxIndex));
-  drawRow(160,260,91, "CO2", String(cO2), "ppm", true);
+  drawRow(160,260,91, "CO2", String(cO2)/*, "ppm", true*/);
+  drawRow(160,260,114, "Vbat", String(battV)/*, "ppm", true*/);
   
   display.update();
 }
