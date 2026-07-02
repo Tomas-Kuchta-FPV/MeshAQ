@@ -49,8 +49,10 @@ So yeah I'm so happy with the result! A neat little usb powered AQ station.
 
 ## Images
 
-![Front](/Images/Front.png)
-![Back](/Images/Back.png)
+![Front](/Images/Front.png)  
+![Back](/Images/Back.png)  
+### Prototype
+![Prototype](https://cdn.hackclub.com/019f23f8-23f4-7395-831d-e00cda036d53/img_20260702_195404.jpg)  
 
 ## Software
 
@@ -62,14 +64,15 @@ I'm hoping to integrate it into meshtastic.
 
 ## BOM
 
-| Item                    | Price (USD) | Link & source                                                                                           |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
-| 3d printed case         | ~ 1         | MeshAQ.3mf                                                                                              |
-| Heltec Mesh Node T114   | 63.38       | https://www.laskakit.cz/heltec-mesh-node-t114-v2-0-868mhz-nrf52840-sx1262/?variantId=17030              |
-| SEN66 AQ sensor         | 68.96       | https://www.laskakit.cz/senserion-sen66-sin-t-senzor-kvality-ovzdusi/                                   |
-| JST GHR-06V-S connector | 0.85        | https://www.laskakit.cz/laskakit-airboard-propojovaci-kabel-pro-senserion-sen6x-senzor-kvality-ovzdusi/ |
-| battery                 | 10.31       | https://www.laskakit.cz/baterie-li-po-3-7v-3000mah-lipo/                                                |
-| Total                   | 143,5       |
+| Item                       | Price (USD) | Link & source                                                                                           |
+| -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
+| 3d printed case            | ~ 1         | MeshAQ.3mf                                                                                              |
+| Heltec Mesh Node T114      | 63.38       | https://www.laskakit.cz/heltec-mesh-node-t114-v2-0-868mhz-nrf52840-sx1262/?variantId=17030              |
+| SEN66 AQ sensor            | 68.96       | https://www.laskakit.cz/senserion-sen66-sin-t-senzor-kvality-ovzdusi/                                   |
+| JST GHR-06V-S connector    | 0.85        | https://www.laskakit.cz/laskakit-airboard-propojovaci-kabel-pro-senserion-sen6x-senzor-kvality-ovzdusi/ |
+| battery                    | 10.31       | https://www.laskakit.cz/baterie-li-po-3-7v-3000mah-lipo/                                                |
+| JST-PH-2 2mm to JST 1.25mm | 0.85        | https://www.laskakit.cz/jst-ph-2-2mm-do-jst-gh-2-1-25mm-adapter-pro-baterie/                            |
+| Total                      | 144,35      |
 
 ## HackClub is fire! 🔥
 https://blueprint.hackclub.com/projects/11552
