@@ -9,14 +9,16 @@ Formaldehyde sensor is super expensive and an increased levels can can be deduct
 
 So yeah I'm so happy with the result! A neat little usb powered AQ station.
 
+![Finished product](/Images/Finished%20product.jpg)
+
 ## Wiring diagram
 
-| Heltec T114 Pin | SEN66 Pin |
-| --------------- | --------- |
-| GND             | GND       |
-| 3V3             | VCC       |
-| GPIO 0.16 (SDA) | SDA       |
-| GPIO 0.13 (SCL) | SCL       |
+| Heltec T114 Pin | SEN66 Pin | LaskaKit cable color |
+| --------------- | --------- | -------------------- |
+| GND             | GND       | Black                |
+| 3V3             | VCC       | Red                  |
+| GPIO 0.16 (SDA) | SDA       | Blue                 |
+| GPIO 0.13 (SCL) | SCL       | Yellow               |
 
 ## Sensors
 
@@ -47,10 +49,10 @@ So yeah I'm so happy with the result! A neat little usb powered AQ station.
 - https://sensirion.com/media/documents/9F289B95/6294DFFC/Info_Note_NOx_Index.pdf
 - https://sensirion.com/products/catalog/SEN66
 
-## Images
+## Renders
 
-![Front](/Images/Front.png)  
-![Back](/Images/Back.png)  
+![Front](/Images/AllinOne-Front.png)  
+![Back](/Images/AllinOne-Back.png)  
 ### Prototype
 ![Prototype](https://cdn.hackclub.com/019f23f8-23f4-7395-831d-e00cda036d53/img_20260702_195404.jpg)  
 
