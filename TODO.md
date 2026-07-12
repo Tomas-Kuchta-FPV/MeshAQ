@@ -1,0 +1,5 @@
+- [ ] Add hole for the battery
+- [ ] Think more abt antenna placement
+- [ ] Tolerance the place for the T114
+- [ ] Add a longer GPS cable to BOM
+- [ ] Make hole bigger for the GPS cable
