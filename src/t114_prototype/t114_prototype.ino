@@ -1,31 +1,39 @@
 /**
- * SEN66 air quality sensor readout on Heltec Mesh Node T114
+ * SEN66 air quality sensor + GPS readout on Heltec Mesh Node T114
  *
  * Reads temperature, humidity, PM1.0/2.5/4.0/10.0, VOC index, NOX index and
- * CO2 from a Sensirion SEN66 and shows them on the onboard 1.14" ST7789 TFT.
+ * CO2 from a Sensirion SEN66, plus position from the onboard L76K GNSS
+ * module, and shows them on the onboard 1.14" ST7789 TFT.
  *
- * Four screens, rotated either by pressing the USER button or automatically
- * every 30 seconds:
+ * Five screens, rotated either by a short press of the USER button or
+ * automatically every 30 seconds:
  *   1) Temperature + Humidity
  *   2) Particulate matter (PM1.0 / PM2.5 / PM4.0 / PM10.0)
  *   3) VOC index + NOX index
  *   4) CO2
+ *   5) GPS (fix status / satellites / lat / lon / altitude)
+ *
+ * Holding the USER button for ~1.5s toggles the GPS module on/off to save
+ * power when you don't need position data.
  *
  * Battery percentage is shown in the top-right corner of every screen.
  *
  * Board:   Heltec Mesh Node T114  https://docs.heltec.org/en/node/nrf/mesh_node_t114/quick_start.html
  * Sensor:  Sensirion SEN66        (I2C)
+ * GNSS:    Quectel L76K           (UART, Serial1)
  * Display: 1.14" ST7789 135x240   (SPI1)
  *
  * Libraries required (Library Manager):
  *   - Sensirion I2C SEN66 (SensirionI2cSen66)
  *   - Adafruit GFX Library
  *   - Adafruit ST7735 and ST7789 Library
+ *   - TinyGPSPlus (by Mikal Hart)
  */
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
 #include <Arduino.h>
+#include <TinyGPSPlus.h>
 #include <Wire.h>
 #include "SensirionI2cSen66.h"
 
@@ -53,6 +61,15 @@
 // -- SEN66 I2C --
 #define SEN66_SDA_PIN 16
 #define SEN66_SCL_PIN 13
+
+// -- GPS (L76K) --
+// Values taken from the T114 board variant.h used by Meshtastic firmware.
+// These match Meshtastic pin defines for the onboard L76K module.
+#define GPS_STANDBY_PIN (32 + 2) // output: LOW = allow GPS to sleep, HIGH = force wake
+#define GPS_RX_PIN       (32 + 5) // our RX <- GPS TX
+#define GPS_TX_PIN       (32 + 7) // our TX -> GPS RX
+#define GPS_BAUD         9600
+#define GPS_CONNECTION_TIMEOUT_MS 5000
 
 // -- TFT (from Heltec T114 variant) --
 #define SOC_GPIO_PIN_T114_VEXT_EN    21  // P0.21
@@ -91,6 +108,7 @@ static int16_t error;
 
 SensirionI2cSen66 sensor;
 Adafruit_ST7789 tft(&SPI1, SOC_GPIO_PIN_T114_TFT_SS, SOC_GPIO_PIN_T114_TFT_DC, SOC_GPIO_PIN_T114_TFT_RST);
+TinyGPSPlus gps;
 
 uint8_t padding = 0;
 bool dataReady = false;
@@ -109,11 +127,16 @@ uint16_t co2 = 0;
 float battVoltage = 0.0;
 uint8_t battPercent = 0;
 
+bool gpsEnabled = false; // set true in setup() once GPS is brought up
+bool gpsConnected = false; // true after the GPS UART produces NMEA traffic
+unsigned long lastGpsByteMs = 0;
+
 enum Screen : uint8_t {
   SCREEN_TEMP_HUMIDITY = 0,
   SCREEN_PM,
   SCREEN_VOC_NOX,
   SCREEN_CO2,
+  SCREEN_GPS,
   SCREEN_COUNT
 };
 
@@ -123,20 +146,26 @@ bool needsRedraw = true;
 unsigned long lastSensorPollMs = 0;
 unsigned long lastScreenChangeMs = 0;
 
-// Button state, updated from the interrupt
-volatile bool buttonPressedFlag = false;
+// Button state, updated from the interrupt + polled in loop() to tell a
+// short press (change screen) from a long press/hold (toggle GPS)
+volatile bool buttonEdgeFlag = false;
 volatile unsigned long lastInterruptMs = 0;
+bool buttonIsDown = false;
+unsigned long buttonDownStartMs = 0;
+bool longPressHandled = false;
+#define LONG_PRESS_MS 1500
 
 // ------------------------------------------------------------------------
 // Button handling
 // ------------------------------------------------------------------------
 
 // nRF52 doesn't require/have IRAM_ATTR (that's an ESP32-ism), so the ISR
-// is declared plain here.
+// is declared plain here. This only records that a press started - the
+// short-vs-long-press decision happens in loop() by polling the pin.
 void buttonISR() {
   unsigned long now = millis();
   if (now - lastInterruptMs > BUTTON_DEBOUNCE_MS) {
-    buttonPressedFlag = true;
+    buttonEdgeFlag = true;
     lastInterruptMs = now;
   }
 }
@@ -166,6 +195,34 @@ uint8_t voltageToPercent(float v) {
     }
   }
   return 0;
+}
+
+// ------------------------------------------------------------------------
+// GPS control
+// ------------------------------------------------------------------------
+
+void setGpsEnabled(bool enable) {
+  gpsEnabled = enable;
+  digitalWrite(GPS_STANDBY_PIN, enable ? HIGH : LOW);
+
+  if (enable) {
+    Serial1.begin(GPS_BAUD);
+    gpsConnected = false;
+    lastGpsByteMs = millis();
+  } else {
+    Serial1.end();
+  }
+
+  Serial.print("GPS ");
+  Serial.println(enable ? "enabled" : "disabled");
+
+  if (currentScreen == SCREEN_GPS) {
+    needsRedraw = true;
+  }
+}
+
+void toggleGps() {
+  setGpsEnabled(!gpsEnabled);
 }
 
 // ------------------------------------------------------------------------
@@ -393,12 +450,96 @@ void drawScreenCO2() {
   tft.print("ppm");
 }
 
+void drawScreenGPS() {
+  tft.fillScreen(COLOR_BG);
+  drawHeader("GPS");
+
+  if (!gpsEnabled) {
+    tft.setTextSize(1);
+    tft.setTextColor(COLOR_GRAY, COLOR_BG);
+    tft.setCursor(6, 40);
+    tft.print("GPS is OFF");
+    tft.setCursor(6, 54);
+    tft.print("Hold button ~1.5s to enable");
+    return;
+  }
+
+  if (!gpsConnected) {
+    tft.setTextSize(1);
+    tft.setTextColor(COLOR_BAD, COLOR_BG);
+    tft.setCursor(6, 40);
+    tft.print("No GPS data");
+    tft.setCursor(6, 54);
+    tft.print("Check TX/RX and power");
+    return;
+  }
+
+  tft.setTextSize(1);
+  tft.setTextColor(COLOR_LABEL, COLOR_BG);
+  tft.setCursor(6, 32);
+  tft.print("SATS:");
+  tft.setTextColor(COLOR_TEXT, COLOR_BG);
+  tft.setCursor(42, 32);
+  tft.print(gps.satellites.isValid() ? gps.satellites.value() : 0);
+
+  tft.setTextColor(COLOR_LABEL, COLOR_BG);
+  tft.setCursor(90, 32);
+  tft.print("HDOP:");
+  tft.setTextColor(COLOR_TEXT, COLOR_BG);
+  tft.setCursor(126, 32);
+  if (gps.hdop.isValid()) {
+    tft.print(gps.hdop.hdop(), 1);
+  } else {
+    tft.print("--");
+  }
+
+  if (!gps.location.isValid()) {
+    tft.setTextSize(2);
+    tft.setTextColor(COLOR_WARN, COLOR_BG);
+    tft.setCursor(6, 60);
+    tft.print("Searching...");
+    return;
+  }
+
+  tft.setTextSize(1);
+  tft.setTextColor(COLOR_LABEL, COLOR_BG);
+  tft.setCursor(6, 50);
+  tft.print("LAT");
+  tft.setTextSize(2);
+  tft.setTextColor(COLOR_TEXT, COLOR_BG);
+  tft.setCursor(6, 60);
+  tft.print(gps.location.lat(), 5);
+
+  tft.setTextSize(1);
+  tft.setTextColor(COLOR_LABEL, COLOR_BG);
+  tft.setCursor(6, 84);
+  tft.print("LON");
+  tft.setTextSize(2);
+  tft.setTextColor(COLOR_TEXT, COLOR_BG);
+  tft.setCursor(6, 94);
+  tft.print(gps.location.lng(), 5);
+
+  tft.setTextSize(1);
+  tft.setTextColor(COLOR_LABEL, COLOR_BG);
+  tft.setCursor(160, 50);
+  tft.print("ALT");
+  tft.setTextColor(COLOR_TEXT, COLOR_BG);
+  tft.setCursor(160, 60);
+  if (gps.altitude.isValid()) {
+    tft.print(gps.altitude.meters(), 0);
+    tft.print("m");
+  } else {
+    tft.print("--");
+  }
+}
+
 void drawCurrentScreen() {
   switch (currentScreen) {
     case SCREEN_TEMP_HUMIDITY: drawScreenTempHumidity(); break;
     case SCREEN_PM:            drawScreenPM();           break;
     case SCREEN_VOC_NOX:       drawScreenVocNox();       break;
     case SCREEN_CO2:           drawScreenCO2();          break;
+    case SCREEN_GPS:           drawScreenGPS();          break;
   }
   needsRedraw = false;
 }
@@ -478,6 +619,10 @@ void setup() {
   battVoltage = readBatteryVoltage();
   battPercent = voltageToPercent(battVoltage);
 
+  // -- GPS --
+  pinMode(GPS_STANDBY_PIN, OUTPUT);
+  setGpsEnabled(true); // starts ON by default; hold the button to turn off
+
   lastScreenChangeMs = millis();
   lastSensorPollMs = millis();
   needsRedraw = true;
@@ -508,12 +653,64 @@ void loop() {
       Serial.print(" Batt:"); Serial.print(battPercent);
       Serial.println("%");
     }
+
+    // Keep the GPS screen refreshing (sat count / fix status) even
+    // between NMEA updates, e.g. while still searching for a fix.
+    if (currentScreen == SCREEN_GPS) {
+      needsRedraw = true;
+    }
   }
 
-  // Manual rotation via button
-  if (buttonPressedFlag) {
-    buttonPressedFlag = false;
-    nextScreen();
+  // Feed any waiting NMEA bytes to the GPS parser
+  if (gpsEnabled) {
+    bool sawGpsByte = false;
+    while (Serial1.available()) {
+      sawGpsByte = true;
+      if (gps.encode(Serial1.read()) && currentScreen == SCREEN_GPS) {
+        needsRedraw = true;
+      }
+    }
+
+    if (sawGpsByte) {
+      gpsConnected = true;
+      lastGpsByteMs = now;
+    } else if (now - lastGpsByteMs > GPS_CONNECTION_TIMEOUT_MS) {
+      gpsConnected = false;
+    }
+
+    if (currentScreen == SCREEN_GPS &&
+        (gps.location.isUpdated() || gps.satellites.isUpdated() || gps.hdop.isUpdated())) {
+      needsRedraw = true;
+    }
+  }
+
+  // -- Button: short press = next screen, long press (~1.5s) = toggle GPS --
+  if (buttonEdgeFlag) {
+    buttonEdgeFlag = false;
+    if (!buttonIsDown) {
+      buttonIsDown = true;
+      buttonDownStartMs = now;
+      longPressHandled = false;
+    }
+  }
+
+  if (buttonIsDown) {
+    bool stillHeld = (digitalRead(BUTTON_PIN) == LOW); // active-low button
+    unsigned long heldFor = now - buttonDownStartMs;
+
+    if (!longPressHandled && heldFor >= LONG_PRESS_MS) {
+      toggleGps();
+      longPressHandled = true;
+    }
+
+    if (!stillHeld) {
+      // Released - only treat as a screen-change if it wasn't already
+      // handled as a long press
+      if (!longPressHandled) {
+        nextScreen();
+      }
+      buttonIsDown = false;
+    }
   }
 
   // Automatic rotation after timeout
@@ -526,4 +723,3 @@ void loop() {
     drawCurrentScreen();
   }
 }
-
