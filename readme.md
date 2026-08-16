@@ -78,3 +78,4 @@ I'm hoping to integrate it into meshtastic.
 
 ## HackClub is fire! 🔥
 https://blueprint.hackclub.com/projects/11552
+https://github.com/Tomas-Kuchta-FPV/MeshAQ
