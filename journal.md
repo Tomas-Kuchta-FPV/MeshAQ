@@ -337,3 +337,5 @@ I have also tried to add in GPS support but I ran out of contex and tokens.
 Looks super neat, and I can't wait to measure the nasty air at the venue lol.  
 ![](https://cdn.hackclub.com/019f56bc-9ca5-7faf-82b0-7bfb11f43d43/1000039036.jpg)  
 [Video of it working](https://cdn.hackclub.com/019f56bc-70db-7756-8306-433a7e309648/1000039035.mp4)  
+Moved to
+https://stardance.hackclub.com/projects/49514  

@@ -9,7 +9,7 @@ Formaldehyde sensor is super expensive and an increased levels can can be deduct
 
 So yeah I'm so happy with the result! A neat little usb powered AQ station.
 
-![Finished product](/Images/Finished%20product.jpg)
+![Finished product](/Images/MeshAQ.jpg)
 
 ## Wiring diagram
 
